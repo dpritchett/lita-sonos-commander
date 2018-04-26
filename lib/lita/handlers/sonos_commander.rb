@@ -10,8 +10,8 @@ module Lita
 
       http.get '/sonos/listen', :sonos_connector
 
-      route %r{/^play_url (.+)}, :sonos_play_url
-      route %r{/^say_text (.+)}, :sonos_say_text
+      route %r{^play_url (.+)}, :sonos_play_url
+      route %r{^say_text (.+)}, :sonos_say_text
 
       on :loaded, :register_faye
 
