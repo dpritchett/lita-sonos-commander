@@ -48,13 +48,13 @@ module Lita
       end
 
       def self.sockets
-        @@_sockets ||= []
+        @_sockets ||= []
       end
 
       def self.add_socket(socket)
         puts "Tracking socket #{socket}"
-        @@_sockets ||= []
-        @@_sockets << socket
+        @_sockets ||= []
+        @_sockets << socket
       end
 
       def self.drop_socket(socket)
@@ -63,7 +63,7 @@ module Lita
       end
 
       def register_faye(arg)
-        @@_sockets ||= []
+        @_sockets ||= []
         middleware = robot.registry.config.http.middleware
         socket_manager = Lita::CommanderMiddleware.build
         middleware.use socket_manager
