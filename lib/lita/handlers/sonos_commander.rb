@@ -1,3 +1,5 @@
+require 'pry'
+
 require 'json'
 require 'faye/websocket'
 require 'uri'
@@ -8,8 +10,8 @@ module Lita
 
       http.get '/sonos/listen', :sonos_connector
 
-      route /^play_url (.+)/, :sonos_play_url
-      route /^say_text (.+)/, :sonos_say_text
+      route %r{/^play_url (.+)}, :sonos_play_url
+      route %r{/^say_text (.+)}, :sonos_say_text
 
       on :loaded, :register_faye
 
@@ -26,10 +28,15 @@ module Lita
       def emit_message(command:, data:)
         puts "emitting #{command} \t #{data}"
         sockets.each do |ws|
-          ws.send(
-            { command: command, data: { text: data, volume: 20 } }.to_json
-          )
+          ws.send serialize(command: command, text: data)
         end
+      end
+
+      def serialize(command:, text:)
+        {
+          command: command,
+          data: { text: text, volume: 20 }
+        }.to_json
       end
 
       def middlewares
@@ -55,13 +62,11 @@ module Lita
         sockets.delete_if { |s| s == socket }
       end
 
-      def self.serialize(message)
-      end
-
       def register_faye(arg)
         @@_sockets ||= []
         middleware = robot.registry.config.http.middleware
-        result = middleware.use Lita::CommanderMiddleware
+        socket_manager = Lita::CommanderMiddleware.build
+        middleware.use socket_manager
       end
 
       def sonos_connector(request, response)
