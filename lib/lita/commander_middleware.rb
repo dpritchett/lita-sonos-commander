@@ -1,11 +1,11 @@
 class Lita::CommanderMiddleware 
-  def self.build
+  def self.build(commander)
     return lambda do |env|
 
       if Faye::WebSocket.websocket?(env)
         ws = Faye::WebSocket.new(env)
 
-        Lita::Handlers::SonosCommander.add_socket(ws)
+        commander.push_socket(ws)
 
         ws.on :open do |event|
         end
@@ -21,7 +21,7 @@ class Lita::CommanderMiddleware
         end
 
         ws.on :close do |event|
-          Lita::Handlers::SonosCommander.drop_socket(ws)
+          commander.pop_socket(ws)
 
           p [:close, event.code, event.reason]
           ws = nil

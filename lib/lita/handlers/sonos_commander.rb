@@ -8,21 +8,40 @@ module Lita
   module Handlers
     class SonosCommander < Handler
 
+      @_sockets ||= []
+
+      def self.sockets
+        @_sockets
+      end
+
+
       http.get '/sonos/listen', :sonos_connector
 
-      route %r{^play_url (.+)}, :sonos_play_url
-      route %r{^say_text (.+)}, :sonos_say_text
+      route(/^play_url (.+)/, :sonos_play_url)
+      route(/^say_text (.+)/, :sonos_say_text)
 
       on :loaded, :register_faye
 
+      def clients?
+        sockets.any?
+      end
+
       def sonos_play_url(message)
+        return message.reply('No clients found!') unless clients?
+
         text = message.matches.last.last
         emit_message command: 'play_url', data: URI.escape(text)
+
+        message.reply "Command sent: [play_url] #{text}!"
       end
 
       def sonos_say_text(message)
+        return message.reply('No clients found!') unless clients?
+
         text = message.matches.last.last
         emit_message command: 'play_text', data: text
+
+        message.reply "Command sent: [play_text] #{text}!"
       end
 
       def emit_message(command:, data:)
@@ -47,25 +66,19 @@ module Lita
         self.class.sockets
       end
 
-      def self.sockets
-        @_sockets ||= []
-      end
-
-      def self.add_socket(socket)
+      def push_socket(socket)
         puts "Tracking socket #{socket}"
-        @_sockets ||= []
-        @_sockets << socket
+        sockets << socket
       end
 
-      def self.drop_socket(socket)
+      def pop_socket(socket)
         puts "Forgetting socket #{socket}"
         sockets.delete_if { |s| s == socket }
       end
 
       def register_faye(arg)
-        @_sockets ||= []
         middleware = robot.registry.config.http.middleware
-        socket_manager = Lita::CommanderMiddleware.build
+        socket_manager = Lita::CommanderMiddleware.build(self)
         middleware.use socket_manager
       end
 
@@ -74,7 +87,6 @@ module Lita
           mw.middleware.call(request.env)
         end
       end
-
 
       Lita.register_handler(self)
     end
