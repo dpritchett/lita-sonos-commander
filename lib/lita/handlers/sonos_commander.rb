@@ -1,68 +1,71 @@
-require 'pry'
+require 'json'
+require 'faye/websocket'
+require 'uri'
+
 module Lita
   module Handlers
     class SonosCommander < Handler
-      # insert handler code here
-
-      require 'faye/websocket'
-
 
       http.get '/sonos/listen', :sonos_connector
 
-      route /^sonos (.+)/, :send_to_sonos
-      route /^explore/, :call_explorer
+      route /^play_url (.+)/, :sonos_play_url
+      route /^say_text (.+)/, :sonos_say_text
 
       on :loaded, :register_faye
+
+      def sonos_play_url(message)
+        text = message.matches.last.last
+        emit_message command: 'play_url', data: URI.escape(text)
+      end
+
+      def sonos_say_text(message)
+        text = message.matches.last.last
+        emit_message command: 'play_text', data: text
+      end
+
+      def emit_message(command:, data:)
+        puts "emitting #{command} \t #{data}"
+        sockets.each do |ws|
+          ws.send(
+            { command: command, data: { text: data, volume: 20 } }.to_json
+          )
+        end
+      end
 
       def middlewares
         robot.registry.config.http.middleware
       end
 
-      App = lambda do |env|
-        if Faye::WebSocket.websocket?(env)
-          ws = Faye::WebSocket.new(env)
+      def sockets
+        self.class.sockets
+      end
 
-          ws.on :message do |event|
-            ws.send(event.data)
+      def self.sockets
+        @@_sockets ||= []
+      end
 
-            sleep 2
-            ws.send "WE DID IT TWITCH"
-          end
+      def self.add_socket(socket)
+        puts "Tracking socket #{socket}"
+        @@_sockets ||= []
+        @@_sockets << socket
+      end
 
-          ws.on :close do |event|
-            p [:close, event.code, event.reason]
-            ws = nil
-          end
+      def self.drop_socket(socket)
+        puts "Forgetting socket #{socket}"
+        sockets.delete_if { |s| s == socket }
+      end
 
-          # Return async Rack response
-          ws.rack_response
-
-        else
-          # Normal HTTP request
-          [200, {'Content-Type' => 'text/plain'}, ['Hello']]
-        end
+      def self.serialize(message)
       end
 
       def register_faye(arg)
+        @@_sockets ||= []
         middleware = robot.registry.config.http.middleware
-        result = middleware.use App
-#        binding.pry
-      end
-
-      def send_to_sonos(message)
-        #binding.pry
-      end
-
-      def call_explorer(_message); explorer; end
-
-      def explorer
-        middleware = robot.registry.config.http.middleware
+        result = middleware.use Lita::CommanderMiddleware
       end
 
       def sonos_connector(request, response)
-        #binding.pry
         middlewares.each do |mw|
-        #  binding.pry
           mw.middleware.call(request.env)
         end
       end

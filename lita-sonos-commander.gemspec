@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name          = 'lita-sonos-commander'
-  spec.version       = '0.1.0'
+  spec.version       = '1.0.0'
   spec.authors       = ['Daniel J. Pritchett']
   spec.email         = ['dpritchett@gmail.com']
   spec.description   = 'Control your Sonos with Lita chatbot commands'
