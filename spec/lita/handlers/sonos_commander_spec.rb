@@ -11,11 +11,21 @@ describe Lita::Handlers::SonosCommander, lita_handler: true do
   describe 'routes' do
     it {
       is_expected.to route_http(:get, '/sonos/listen')
-        .to(:sonos_connector)
+        .to(:websocket_creator)
     }
 
-    it { is_expected.to route('Lita sonos alpha bravo')
-      .to(:send_to_sonos) }
+    it {
+      is_expected.to(route('Lita play url http://zombo.com')
+      .to(:sonos_play_url))
+    }
+    it {
+      is_expected.to(route('Lita play url https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+      .to(:sonos_play_url))
+    }
+    it {
+      is_expected.to(route('Lita speak words i like turtles')
+      .to(:sonos_say_text))
+    }
   end
   # END:routes
 

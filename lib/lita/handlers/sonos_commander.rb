@@ -14,11 +14,10 @@ module Lita
         @_sockets
       end
 
+      http.get '/sonos/listen', :websocket_creator
 
-      http.get '/sonos/listen', :sonos_connector
-
-      route(/^play_url (.+)/, :sonos_play_url)
-      route(/^say_text (.+)/, :sonos_say_text)
+      route(/^play url (http.+)/i, :sonos_play_url)
+      route(/^speak words (.+)/i, :sonos_say_text)
 
       on :loaded, :register_faye
 
@@ -76,13 +75,16 @@ module Lita
         sockets.delete_if { |s| s == socket }
       end
 
-      def register_faye(arg)
+      def register_faye(_arg)
         middleware = robot.registry.config.http.middleware
         socket_manager = Lita::CommanderMiddleware.build(self)
         middleware.use socket_manager
       end
 
-      def sonos_connector(request, response)
+      def websocket_creator(request, _response)
+        # could probably skip straight to the Commander middleware
+        # but it's cleaner to leave them all in play.
+
         middlewares.each do |mw|
           mw.middleware.call(request.env)
         end

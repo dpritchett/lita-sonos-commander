@@ -5,7 +5,8 @@ class Lita::CommanderMiddleware
       if Faye::WebSocket.websocket?(env)
         ws = Faye::WebSocket.new(env)
 
-        commander.push_socket(ws)
+        commander.sockets << ws
+        Lita.logger.debug "Sonos client count: #{commander.sockets.count}"
 
         ws.on :open do |event|
         end
@@ -21,7 +22,8 @@ class Lita::CommanderMiddleware
         end
 
         ws.on :close do |event|
-          commander.pop_socket(ws)
+          commander.sockets.delete_if { |s| s == ws }
+          Lita.logger.debug "Sonos client count: #{commander.sockets.count}"
 
           p [:close, event.code, event.reason]
           ws = nil
@@ -31,15 +33,10 @@ class Lita::CommanderMiddleware
         ws.rack_response
 
       else
+        puts "I'm not in a socket! :("
         # Normal HTTP request
         [200, {'Content-Type' => 'text/plain'}, ['Hello']]
       end
-    end
-
-    def register_faye(arg)
-      @@_sockets ||= []
-      middleware = robot.registry.config.http.middleware
-      result = middleware.use App
     end
 
     def sonos_connector(request, response)
