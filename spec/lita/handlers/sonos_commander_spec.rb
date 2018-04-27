@@ -16,56 +16,39 @@ describe Lita::Handlers::SonosCommander, lita_handler: true do
 
     it {
       is_expected.to(route('Lita play url http://zombo.com')
-      .to(:sonos_play_url))
+      .to(:handle_sonos_play_url))
     }
     it {
       is_expected.to(route('Lita play url https://www.youtube.com/watch?v=dQw4w9WgXcQ')
-      .to(:sonos_play_url))
+      .to(:handle_sonos_play_url))
     }
     it {
       is_expected.to(route('Lita speak words i like turtles')
-      .to(:sonos_say_text))
+      .to(:handle_sonos_say_text))
     }
   end
   # END:routes
 
-  describe 'exploratory' do
-    it "let's play" do
-      subject.explorer
+  describe 'sending messages to clients' do
+    let(:client) { double('socket client') }
+    before { subject.stub(:sockets).and_return [client] }
+
+    it 'should work' do
+      expect(subject.sockets).to include(client)
+    end
+
+    it 'should :send some commanding json to the client' do
+      expect(client).to receive(:send).with(/play_url.+http.+volume/)
+
+      subject.play_url('http://bana.nas')
     end
   end
-  # START:save_message
-  describe ':save_message' do
-    let(:body) { 'hello, alexa!' }
-    it 'saves a message and acknowledges' do
-      result = subject.save_message(username: 'dpritchett', message: body)
-
-      expect(result.fetch(:message)).to eq body
-    end
-
-    it { is_expected.to route_event(:save_alexa_message).to(:save_message) }
-  end
-  # END:save_message
-
-  # START:alexify
-  describe ':alexify' do
-    let(:message) do
-      subject.save_message username: 'daniel', message: 'test message'
-    end
-
-    it 'should return a hash with an alexa-specific shape' do
-      result = subject.alexify(message)
-      expect(result.fetch(:mainText)).to eq('test message')
-    end
-  end
-  # END:alexify
 
   it 'can grab a message from chat and store it' do
-    send_message "lita newsfeed hello there #{DateTime.now}"
+    send_message 'lita speak words i like turtles'
     response = replies.last
-    expect(response =~ /hello there/i).to be_truthy
-    expect(response =~ /Saved message for Alexa/).to be_truthy
+
+    expect(response).to match /hello there/i
+    expect(response).to match /Saved message for Alexa/
   end
-
 end
-
