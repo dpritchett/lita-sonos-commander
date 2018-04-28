@@ -70,7 +70,7 @@ module Lita
 
       # START:faye_hookup
       def register_faye(_arg)
-        socket_manager = Lita::CommanderMiddleware.build(self)
+        socket_manager = Lita::CommanderMiddleware.build(open_sockets: sockets)
         middleware_registry.use socket_manager
       end
 
@@ -78,7 +78,6 @@ module Lita
         robot.registry.config.http.middleware
       end
       # END:faye_hookup
-
 
       # START:message_emission
       def emit_message(command:, data:)
