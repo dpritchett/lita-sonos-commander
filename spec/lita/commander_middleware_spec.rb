@@ -6,7 +6,7 @@ describe Lita::CommanderMiddleware do
   let(:result) { subject.build({}) }
 
   it 'returns a lambda' do
-    result = subject.class.build({})
+    result = subject.class.build(open_sockets: [])
     expect(result.is_a?(Proc)).to be_truthy
   end
 end
