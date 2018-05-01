@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'pry'
 require 'date'
 
 describe Lita::Handlers::SonosCommander, lita_handler: true do
@@ -16,15 +15,15 @@ describe Lita::Handlers::SonosCommander, lita_handler: true do
 
     it {
       is_expected.to(route('Lita play url http://zombo.com')
-      .to(:handle_sonos_play_url))
+        .to(:handle_sonos_play_url))
     }
     it {
       is_expected.to(route('Lita play url https://www.youtube.com/watch?v=dQw4w9WgXcQ')
-      .to(:handle_sonos_play_url))
+        .to(:handle_sonos_play_url))
     }
     it {
       is_expected.to(route('Lita speak words i like turtles')
-      .to(:handle_sonos_say_text))
+        .to(:handle_sonos_say_text))
     }
 
     it { is_expected.to route_event(:loaded).to(:register_faye) }

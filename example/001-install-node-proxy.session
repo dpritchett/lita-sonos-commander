@@ -1,0 +1,44 @@
+# download the sonos proxy server
+$ git clone https://github.com/dpritchett/sonos-proxy-for-lita-with-node.git
+Cloning into 'sonos-proxy-for-lita-with-node'...
+remote: Counting objects: 114, done.
+remote: Compressing objects: 100% (83/83), done.
+remote: Total 114 (delta 32), reused 111 (delta 30), pack-reused 0
+Receiving objects: 100% (114/114), 55.91 KiB | 773.00 KiB/s, done.
+Resolving deltas: 100% (32/32), done.
+
+$ cd sonos-proxy-for-lita-with-node/
+
+# install yarn package manager
+$ npm install -g yarn
+
+# ask yarn to install all dependencies for this proxy
+$ yarn
+yarn install v1.6.0
+warning package.json: No license field
+warning sonos_proxy_node@1.0.0: No license field
+[1/4] Resolving packages...
+[2/4] Fetching packages...
+[3/4] Linking dependencies...
+[4/4] Building fresh packages...
+Done in 1.47s.
+
+# start the server
+$ node ./server.js
+2018-04-30T12:11:29.284Z INFO Could not find file
+  node_moduels/sonos-http-api/settings.json
+2018-04-30T12:11:29.505Z INFO Presets loaded: { example:
+   { players:
+      [ { roomName: 'Bathroom', volume: 10 },
+        { roomName: 'Kitchen', volume: 10 },
+        { roomName: 'Office', volume: 10 },
+        { roomName: 'Bedroom', volume: 10 },
+        { roomName: 'TV Room', volume: 15 } ],
+     playMode: { shuffle: true, repeat: 'all', crossfade: false },
+     pauseOthers: false,
+     favorite: 'My example favorite' } }
+Looking for Sonos speakers
+2018-04-30T12:11:29.554Z INFO http server listening on port 5005
+close event received
+Lost contact with server: ws://ad0ede69.ngrok.io/sonos/listen
+I don't know how to reconnect yet.  Please help!
