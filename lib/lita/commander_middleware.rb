@@ -49,7 +49,7 @@ class Lita::CommanderMiddleware
     send_welcome_message(ws)
 
     ws.on(:message) { |event| handle_message(ws, event) }
-    ws.on(:close) { close_socket(ws, event) }
+    ws.on(:close) { |event| close_socket(ws, event) }
 
     # Return async Rack response
     ws.rack_response
