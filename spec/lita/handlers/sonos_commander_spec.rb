@@ -84,6 +84,7 @@ describe Lita::Handlers::SonosCommander, lita_handler: true do
     end
   end
 
+  # START:faye_hookup
   describe 'socket middleware registration' do
     let(:middlewares) { double 'middlewares' }
     before { subject.stub(:middleware_registry).and_return(middlewares) }
@@ -97,17 +98,23 @@ describe Lita::Handlers::SonosCommander, lita_handler: true do
       subject.register_faye(nil)
     end
   end
+  # END:faye_hookup
 
+  # START:create_sockets
   describe ':websocket_creator' do
     let(:request) { double 'request' }
     let(:request_env) { double 'request' }
     let(:middleware) { double 'middleware' }
+    let(:middlewares) { double 'middlewares' }
 
-    before { subject.stub_chain(:middleware_registry, :each).and_return [middleware] }
+    before { subject.stub_chain(:middleware_registry).and_return [middlewares] }
+    before { middlewares.stub(:middleware).and_return middleware }
     before { request.stub(:env).and_return(request_env) }
 
     it 'passes incoming any request environments to registered middlewares' do
+      expect(middleware).to receive(:call).with(request_env)
       subject.websocket_creator(request, nil)
     end
   end
+  # END:create_sockets
 end

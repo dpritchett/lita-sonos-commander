@@ -1,4 +1,5 @@
 class Lita::CommanderMiddleware
+  # START:initialize
   def self.build(open_sockets:)
     new(open_sockets: open_sockets).build
   end
@@ -8,7 +9,9 @@ class Lita::CommanderMiddleware
   def initialize(open_sockets:)
     @open_sockets = open_sockets
   end
+  # END:initialize
 
+  # START:socket_building
   def build
     lambda do |env|
       if Faye::WebSocket.websocket?(env)
@@ -26,6 +29,17 @@ class Lita::CommanderMiddleware
     Lita.logger.debug "Sonos client count: #{open_sockets.count}"
     ws
   end
+  # END:socket_building
+
+  # START:event_handlers
+  def send_welcome_message(ws)
+    payload = { message: 'Welcome to Lita Sonos Commander!', command: 'echo' }
+    ws.send(payload.to_json)
+  end
+
+  def handle_message(ws, event)
+    ws.send({ message: "ACK: #{event.data}" }.to_json)
+  end
 
   def close_socket(ws, event)
     open_sockets.delete_if { |s| s == ws }
@@ -33,16 +47,9 @@ class Lita::CommanderMiddleware
     Lita.logger.debug "Socket close: #{[:close, event.code, event.reason]}"
     ws = nil
   end
+  # END:event_handlers
 
-  def handle_message(ws, event)
-    ws.send({ message: "ACK: #{event.data}" }.to_json)
-  end
-
-  def send_welcome_message(ws)
-    payload = { message: 'Welcome to Lita Sonos Commander!', command: 'echo' }
-    ws.send(payload.to_json)
-  end
-
+  # START:request_handlers
   def handle_env_has_socket
     ws = build_socket(env)
 
@@ -62,4 +69,5 @@ class Lita::CommanderMiddleware
       ['Hello from a Lita chatbot! Feed me a websocket connection!']
     ]
   end
+  # END:request_handlers
 end

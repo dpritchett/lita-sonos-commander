@@ -2,6 +2,7 @@ require 'spec_helper'
 require 'ostruct'
 require 'date'
 
+# START:lambda_basic
 describe Lita::CommanderMiddleware do
   let(:handler) { double 'handler' }
   let(:result) { subject.build({}) }
@@ -14,7 +15,9 @@ describe Lita::CommanderMiddleware do
     result = subject.build
     expect(result.is_a?(Proc)).to be_truthy
   end
+  # END:lambda_basic
 
+  # START:add_client
   context 'adding a new client' do
     before { Faye::WebSocket.stub(:new).and_return(a_socket) }
     let(:result) { subject.build_socket(nil) }
@@ -27,6 +30,7 @@ describe Lita::CommanderMiddleware do
       expect(open_sockets).to include(result)
     end
   end
+  # END:add_client
 
   context 'client disconnects' do
     let(:event) { double 'socket event' }
