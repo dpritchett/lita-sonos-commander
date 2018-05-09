@@ -30,6 +30,7 @@ describe Lita::Handlers::SonosCommander, lita_handler: true do
   end
   # END:routes
 
+  # START:chat_handlers
   describe 'sending messages to clients' do
     let(:client) { double('socket client') }
     before { subject.stub(:sockets).and_return [client] }
@@ -53,7 +54,9 @@ describe Lita::Handlers::SonosCommander, lita_handler: true do
       expect(response).to match(/No clients found/i)
     end
   end
+  # END:chat_handlers
 
+  # START:socket_registry
   describe 'socket registry' do
     let(:sockets) { subject.sockets }
     it 'has a socket registry shared amongst instances of the handler' do
@@ -72,7 +75,9 @@ describe Lita::Handlers::SonosCommander, lita_handler: true do
       expect(sockets).to_not include(canary)
     end
   end
+  # END:socket_registry
 
+  # START:serializer
   describe 'text serializer' do
     it 'creates a json payload' do
       result = subject.serialize(command: 'phone_call', text: 'call your mother')
@@ -83,6 +88,7 @@ describe Lita::Handlers::SonosCommander, lita_handler: true do
       expect(deserialized.dig('data', 'volume')).to_not be_falsey
     end
   end
+  # END:serializer
 
   # START:faye_hookup
   describe 'socket middleware registration' do
