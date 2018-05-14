@@ -1,0 +1,33 @@
+$ node server.js
+2018-05-10T11:34:22.705Z INFO Could not find file /Users/daniel/Projects/sonos_proxy_nodejs/node_modules/sonos-http-api/settings.json
+2018-05-10T11:34:22.897Z INFO Presets loaded: { example:
+   { players:
+      [ { roomName: 'Bathroom', volume: 10 },
+        { roomName: 'Kitchen', volume: 10 },
+        { roomName: 'Office', volume: 10 },
+        { roomName: 'Bedroom', volume: 10 },
+        { roomName: 'TV Room', volume: 15 } ],
+     playMode: { shuffle: true, repeat: 'all', crossfade: false },
+     pauseOthers: false,
+     favorite: 'My example favorite' } }
+Looking for Sonos speakers
+2018-05-10T11:34:22.934Z INFO http server listening on port 5005
+open
+{ message: 'Welcome to Lita Sonos Commander!', command: 'echo' }
+Unhandled command received! echo
+{ message: 'ACK: Hello, world!' }
+No command detected.
+# START:play_text
+{ command: 'play_text', data: { text: 'hi mom', volume: 20 } }
+Received say text request:
+  { text: 'hi mom', volume: 20 }
+Hitting http://0.0.0.0:5005/sayall/hi%20mom/20
+2018-05-10T11:34:42.989Z ERROR No system has yet been discovered.
+# END:play_text
+# START:play_url
+{ command: 'play_url',
+  data: { text: 'http://songs.com/song2.mp3', volume: 20 } }
+Received Play Url request:
+  { text: 'http://songs.com/song2.mp3', volume: 20 }
+Hitting http://0.0.0.0:5005/clipall/http%3A%2F%2Fsongs.com%2Fsong2.mp3/20
+# END:play_url
