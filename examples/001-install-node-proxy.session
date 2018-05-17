@@ -1,14 +1,4 @@
-# download the sonos proxy server
-$ git clone https://github.com/dpritchett/sonos-proxy-for-lita-with-node.git
-Cloning into 'sonos-proxy-for-lita-with-node'...
-remote: Counting objects: 114, done.
-remote: Compressing objects: 100% (83/83), done.
-remote: Total 114 (delta 32), reused 111 (delta 30), pack-reused 0
-Receiving objects: 100% (114/114), 55.91 KiB | 773.00 KiB/s, done.
-Resolving deltas: 100% (32/32), done.
-
-$ cd sonos-proxy-for-lita-with-node/
-
+# START:install_yarn
 # install yarn package manager
 $ npm install -g yarn
 
@@ -22,7 +12,23 @@ warning sonos_proxy_node@1.0.0: No license field
 [3/4] Linking dependencies...
 [4/4] Building fresh packages...
 Done in 1.47s.
+# END:install_yarn
 
+# START:download_proxy
+# download the sonos proxy server
+$ git clone https://github.com/dpritchett/sonos-proxy-for-lita-with-node.git
+Cloning into 'sonos-proxy-for-lita-with-node'...
+remote: Counting objects: 114, done.
+remote: Compressing objects: 100% (83/83), done.
+remote: Total 114 (delta 32), reused 111 (delta 30), pack-reused 0
+Receiving objects: 100% (114/114), 55.91 KiB | 773.00 KiB/s, done.
+Resolving deltas: 100% (32/32), done.
+
+$ cd sonos-proxy-for-lita-with-node/
+# END:download_proxy
+
+
+# START:start_proxy
 # start the server
 $ node ./server.js
 2018-04-30T12:11:29.284Z INFO Could not find file
@@ -39,6 +45,9 @@ $ node ./server.js
      favorite: 'My example favorite' } }
 Looking for Sonos speakers
 2018-04-30T12:11:29.554Z INFO http server listening on port 5005
-close event received
-Lost contact with server: ws://ad0ede69.ngrok.io/sonos/listen
-I don't know how to reconnect yet.  Please help!
+open
+{ message: 'Welcome to Lita Sonos Commander!', command: 'echo' }
+Unhandled command received! echo
+{ message: 'ACK: Hello, world!' }
+No command detected.
+# END:start_proxy

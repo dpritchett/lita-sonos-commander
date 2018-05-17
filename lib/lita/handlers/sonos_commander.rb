@@ -81,7 +81,7 @@ module Lita
 
       # START:message_emission
       def emit_message(command:, data:)
-        puts "emitting #{command} \t #{data}"
+        Lita.logger.debug "emitting #{command} \t #{data}"
 
         sockets.each do |ws|
           ws.send serialize(command: command, text: data)

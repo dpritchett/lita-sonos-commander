@@ -18,10 +18,6 @@ describe Lita::Handlers::SonosCommander, lita_handler: true do
         .to(:handle_sonos_play_url))
     }
     it {
-      is_expected.to(route('Lita play url https://www.youtube.com/watch?v=dQw4w9WgXcQ')
-        .to(:handle_sonos_play_url))
-    }
-    it {
       is_expected.to(route('Lita speak words i like turtles')
         .to(:handle_sonos_say_text))
     }
@@ -66,7 +62,7 @@ describe Lita::Handlers::SonosCommander, lita_handler: true do
       expect(another_one.sockets).to include('banana')
     end
 
-    it 'allows addition and deletion to the socket registry via array methods' do
+    it 'exposes the socket registry as an array' do
       canary = rand(10_000).to_s
       sockets << canary
       expect(sockets).to include(canary)
@@ -113,9 +109,12 @@ describe Lita::Handlers::SonosCommander, lita_handler: true do
     let(:middleware) { double 'middleware' }
     let(:middlewares) { double 'middlewares' }
 
-    before { subject.stub_chain(:middleware_registry).and_return [middlewares] }
-    before { middlewares.stub(:middleware).and_return middleware }
-    before { request.stub(:env).and_return(request_env) }
+    before do
+      subject.stub_chain(:middleware_registry)
+        .and_return([middlewares])
+      middlewares.stub(:middleware).and_return middleware
+      request.stub(:env).and_return(request_env)
+    end
 
     it 'passes incoming any request environments to registered middlewares' do
       expect(middleware).to receive(:call).with(request_env)
